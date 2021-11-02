@@ -1,9 +1,10 @@
 const Discord = require('discord.js');
-const client = new Discord.Client();
+const client = new Discord.Client({ intents: [Discord.Intents.FLAGS.GUILDS, Discord.Intents.FLAGS.GUILD_MESSAGES] });
 client.commands = new Discord.Collection();
 const prefix = 'mc:';
 const fs = require('fs');
 const path = require('path');
+const util = require('minecraft-server-util');
 const cron = require('node-cron');
 
 // 環境変数に.envを使う
@@ -21,6 +22,19 @@ for (const file of commandFiles) {
 console.log(`${command_count} files loaded.`)
 
 // 定期実行の設定
+setInterval(function () {
+    util.status('192.168.1.5') // port is default 25565
+        .then((response) => {
+            console.log(response);
+            let onlines = response.onlinePlayers;
+            client.user.setActivity({name: onlines + ' 人がMinecraft'}); //ステータスメッセージ
+        })
+        .catch((error) => {
+            console.error(error);
+        });
+}, 10000)
+
+// 定時実行の設定
 cron.schedule('0 0 22 * * *', () => {
 
 }, {
@@ -30,12 +44,8 @@ cron.schedule('0 0 22 * * *', () => {
 
 // ログイン処理
 client.on('ready', () => {
-    client.user.setStatus('online') //online, idle, dnd, invisible
-        .then(r => console.log('Status set.'))
-        .catch(console.error);
-    client.user.setActivity('t:info') //ステータスメッセージ
-        .then(r => console.log('Activity set.'))
-        .catch(console.error);
+    client.user.setStatus('online'); //online, idle, dnd, invisible
+    client.user.setActivity('t:info'); //ステータスメッセージ
 
     console.log(`USER: ${client.user.username}`)
     console.log(`ID: ${client.user.id}`)
@@ -48,7 +58,7 @@ client.on('ready', () => {
 });
 
 // コマンド処理
-client.on('message', async message => {
+client.on('messageCreate', async message => {
 
     if (message.author.bot) return;
     if (message.content.indexOf(prefix) !== 0) return;

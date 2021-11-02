@@ -2,11 +2,9 @@
   "name": "minecraft-server-monitor",
   "version": "1.0.0",
   "dependencies": {
-    "node-cron": "^3.0.0",
     "discord.js": "^13.3.1",
-    "dotenv": "^10.0.0"
-  },
-  "devDependencies": {
+    "dotenv": "^10.0.0",
+    "node-cron": "^3.0.0"
   },
   "description": "",
   "main": "main.js",
@@ -22,5 +20,9 @@
   "bugs": {
     "url": "https://github.com/Natsu-dev/Minecraft-Server-Monitor/issues"
   },
-  "homepage": "https://github.com/Natsu-dev/Minecraft-Server-Monitor#readme"
+  "homepage": "https://github.com/Natsu-dev/Minecraft-Server-Monitor#readme",
+  "devDependencies": {
+    "minecraft-server-status": "^1.0.1",
+    "minecraft-server-util": "^4.1.1"
+  }
 }
