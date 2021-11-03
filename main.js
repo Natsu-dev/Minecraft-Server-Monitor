@@ -1,17 +1,22 @@
 const Discord = require('discord.js');
-const client = new Discord.Client({ intents: [Discord.Intents.FLAGS.GUILDS, Discord.Intents.FLAGS.GUILD_MESSAGES] });
+const client = new Discord.Client({intents: [Discord.Intents.FLAGS.GUILDS, Discord.Intents.FLAGS.GUILD_MESSAGES]});
 client.commands = new Discord.Collection();
 const prefix = 'mc:';
 const fs = require('fs');
 const path = require('path');
 const util = require('minecraft-server-util');
 const {exec} = require('child_process')
+const Console = require("console");
 
 // 環境変数に.envを使う
 require('dotenv').config({path: path.join(__dirname, '.env')});
 
-const intervalTimeout = 10000;
+// 定期実行の周期(ms)
+const intervalTimeout = 30000;
+// 自動シャットダウンまでの時間(ms)
+const autoShutdownTime = 3600000;
 let onlines = '-';
+let zeroPlayersCount = 0;
 
 // コマンド読み込み
 let command_count = 0;
@@ -30,7 +35,26 @@ setInterval(function () {
         .then((response) => {
             console.log(response);
             onlines = response.onlinePlayers;
-            client.user.setActivity({name: response.onlinePlayers + ' 人がMinecraft'}); //ステータスメッセージ
+            client.user.setActivity({name: `${response.onlinePlayers} 人がMinecraft`}); //ステータスメッセージ
+
+            // 人数が0の場合はカウントを追加，そうでなければカウントを0に戻す
+            if (onlines === 0)
+                zeroPlayersCount++;
+            else
+                zeroPlayersCount = 0;
+
+            // 0人のままautoShutdownTimeを過ぎた場合は電源を切る
+            // if (zeroPlayersCount >= autoShutdownTime / intervalTimeout) {
+            //     exec('systemctl poweroff', (error, stdout, stderr) => {
+            //         if (error) {
+            //             console.error(`exec error: ${error}`);
+            //             return;
+            //         }
+            //         console.log(`stdout: ${stdout}`);
+            //         console.error(`stderr: ${stderr}`);
+            //     })
+            // }
+            Console.log(`zeroPlayersCount: ${zeroPlayersCount}`);
         })
         .catch((error) => {
             console.error(error);
@@ -40,7 +64,6 @@ setInterval(function () {
 // ログイン処理
 client.on('ready', () => {
     client.user.setStatus('online'); //online, idle, dnd, invisible
-    client.user.setActivity('t:info'); //ステータスメッセージ
 
     console.log(`USER: ${client.user.username}`)
     console.log(`ID: ${client.user.id}`)
