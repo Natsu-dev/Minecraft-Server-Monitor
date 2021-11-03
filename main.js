@@ -26,7 +26,7 @@ console.log(`${command_count} files loaded.`)
 
 // 定期実行の設定
 setInterval(function () {
-    util.status('192.168.1.5') // port is default 25565
+    util.status(process.env.IP_ADDRESS) // port is default 25565
         .then((response) => {
             console.log(response);
             onlines = response.onlinePlayers;
