@@ -5,10 +5,13 @@ const prefix = 'mc:';
 const fs = require('fs');
 const path = require('path');
 const util = require('minecraft-server-util');
-const cron = require('node-cron');
+const {exec} = require('child_process')
 
 // 環境変数に.envを使う
 require('dotenv').config({path: path.join(__dirname, '.env')});
+
+const intervalTimeout = 10000;
+let onlines = '-';
 
 // コマンド読み込み
 let command_count = 0;
@@ -26,21 +29,13 @@ setInterval(function () {
     util.status('192.168.1.5') // port is default 25565
         .then((response) => {
             console.log(response);
-            let onlines = response.onlinePlayers;
-            client.user.setActivity({name: onlines + ' 人がMinecraft'}); //ステータスメッセージ
+            onlines = response.onlinePlayers;
+            client.user.setActivity({name: response.onlinePlayers + ' 人がMinecraft'}); //ステータスメッセージ
         })
         .catch((error) => {
             console.error(error);
         });
-}, 10000)
-
-// 定時実行の設定
-cron.schedule('0 0 22 * * *', () => {
-
-}, {
-    scheduled: true,
-    timezone: 'Asia/Tokyo'
-})
+}, intervalTimeout)
 
 // ログイン処理
 client.on('ready', () => {
