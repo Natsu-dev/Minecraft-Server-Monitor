@@ -5,7 +5,6 @@ const prefix = 'mc:';
 const fs = require('fs');
 const path = require('path');
 const util = require('minecraft-server-util');
-const {exec} = require('child_process')
 const Console = require("console");
 
 // 環境変数に.envを使う
@@ -30,12 +29,15 @@ for (const file of commandFiles) {
 console.log(`${command_count} files loaded.`)
 
 // 定期実行の設定
-setInterval(function () {
+setInterval(() => {
     util.status(process.env.IP_ADDRESS) // port is default 25565
         .then((response) => {
             console.log(response);
             onlines = response.onlinePlayers;
-            client.user.setActivity({name: `${response.onlinePlayers} 人がMinecraft`}); //ステータスメッセージ
+            client.user.setPresence({
+                activities: [{name: `${response.onlinePlayers} 人がMinecraft`}],
+                status: 'online'
+            })
 
             // 人数が0の場合はカウントを追加，そうでなければカウントを0に戻す
             if (onlines === 0)
@@ -58,12 +60,17 @@ setInterval(function () {
         })
         .catch((error) => {
             console.error(error);
+
+            client.user.setPresence({
+                activities: [],
+                status: 'idle'
+            })
         });
 }, intervalTimeout)
 
 // ログイン処理
 client.on('ready', () => {
-    client.user.setStatus('online'); //online, idle, dnd, invisible
+    client.user.setStatus('idle'); //online, idle, dnd, invisible
 
     console.log(`USER: ${client.user.username}`)
     console.log(`ID: ${client.user.id}`)

@@ -5,9 +5,9 @@ module.exports = {
         if (command === 'test' || command === 't'){
             message.channel.send('test');
         }
-        if (command === 'wol' || command === 'w'){
-            console.log('command: wol');
-            await client.commands.get('wol').execute(client, command, args, message);
+        if (command === 'status' || command === 's'){
+            console.log('command: status');
+            await client.commands.get('status').execute(client, command, args, message);
         }
     }
 }
