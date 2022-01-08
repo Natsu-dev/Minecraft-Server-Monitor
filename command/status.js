@@ -19,7 +19,7 @@ module.exports = {
 
                     // サーバーの情報を追加
                     embed.addField('Status: :blue_circle:', 'Active', false)
-                    embed.addField('Version', response.version, false)
+                    embed.addField('Version', response.version.name, false)
 
                     // プレイヤーの一覧をEmbedに追加
                     //let playerNameArray = [];
@@ -28,7 +28,7 @@ module.exports = {
                     //}
                     embed.addField(
                         'Players',
-                        response.onlinePlayers.toString() + ' / ' + response.maxPlayers.toString(),
+                        response.players.online.toString() + ' / ' + response.players.max.toString(),
                         // playerNameArray.join(', ')
                         false
                     )
