@@ -86,6 +86,7 @@ client.on('ready', () => {
 
 // コマンド処理
 client.on('messageCreate', async message => {
+    console.log(message.content)
 
     if (message.author.bot) return;
     if (message.content.indexOf(prefix) !== 0) return;
