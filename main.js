@@ -29,7 +29,7 @@ console.log(`${commandNum} files loaded.`)
 
 // 定期実行の設定
 setInterval(() => {
-    util.status(process.env.IP_ADDRESS, Number(process.env.PORT) ?? 25565) // port is default 25565
+    util.status(process.env.IP_ADDRESS, Number(process.env.PORT)) // port is default 25565
         .then((response) => {
             console.log(response);
             onlines = response.players.online;
