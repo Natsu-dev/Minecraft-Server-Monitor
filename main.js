@@ -5,37 +5,39 @@ const prefix = 'mc:';
 const fs = require('fs');
 const path = require('path');
 const util = require('minecraft-server-util');
-const Console = require("console");
 
 // 環境変数に.envを使う
 require('dotenv').config({path: path.join(__dirname, '.env')});
 
 // 定期実行の周期(ms)
-const intervalTimeout = 30000;
+const timeoutInterval = 30000;
 // 自動シャットダウンまでの時間(ms)
 const autoShutdownTime = 3600000;
 let onlines = '-';
 let zeroPlayersCount = 0;
 
 // コマンド読み込み
-let command_count = 0;
+let commandNum = 0;
 const commandFiles = fs.readdirSync('./command').filter(file => file.endsWith('.js'));
 for (const file of commandFiles) {
-    command_count++;
+    commandNum++;
     const command = require(`./command/${file}`);
     console.log(command);
     client.commands.set(command.name, command);
 }
-console.log(`${command_count} files loaded.`)
+console.log(`${commandNum} files loaded.`)
 
 // 定期実行の設定
 setInterval(() => {
-    util.status(process.env.IP_ADDRESS) // port is default 25565
+    util.status(process.env.IP_ADDRESS, Number(process.env.PORT) ?? 25565) // port is default 25565
         .then((response) => {
             console.log(response);
-            onlines = response.onlinePlayers;
+            onlines = response.players.online;
             client.user.setPresence({
-                activities: [{name: `${response.onlinePlayers} 人がMinecraft`}],
+                activities: [{
+                    name: `${response.players.online} 人がMinecraft`,
+                    type: 'PLAYING'
+                }],
                 status: 'online'
             })
 
@@ -46,7 +48,7 @@ setInterval(() => {
                 zeroPlayersCount = 0;
 
             // 0人のままautoShutdownTimeを過ぎた場合は電源を切る
-            // if (zeroPlayersCount >= autoShutdownTime / intervalTimeout) {
+            // if (zeroPlayersCount >= autoShutdownTime / timeoutInterval) {
             //     exec('systemctl poweroff', (error, stdout, stderr) => {
             //         if (error) {
             //             console.error(`exec error: ${error}`);
@@ -56,7 +58,7 @@ setInterval(() => {
             //         console.error(`stderr: ${stderr}`);
             //     })
             // }
-            Console.log(`zeroPlayersCount: ${zeroPlayersCount}`);
+            console.log(`zeroPlayersCount: ${zeroPlayersCount}`);
         })
         .catch((error) => {
             console.error(error);
@@ -66,7 +68,7 @@ setInterval(() => {
                 status: 'idle'
             })
         });
-}, intervalTimeout)
+}, timeoutInterval)
 
 // ログイン処理
 client.on('ready', () => {
@@ -90,7 +92,7 @@ client.on('messageCreate', async message => {
 
     const args = message.content
         .slice(prefix.length)
-        .trim()
+        .trim() // 前後の空白や改行等を取る
         .split(/ +/g);
     const command = args.shift().toLowerCase(); //引数
     console.log(command)

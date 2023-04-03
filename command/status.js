@@ -6,7 +6,7 @@ module.exports = {
     name: 'status',
     description: 'show server status',
     async execute(client, command, args, message) {
-        util.status(process.env.IP_ADDRESS) // port is default 25565
+        util.status(process.env.IP_ADDRESS, Number(process.env.PORT) ?? 25565) // port is default 25565
             .then((response) => {
                 console.log(response);
                 return new Promise((resolve) => {
@@ -19,7 +19,7 @@ module.exports = {
 
                     // サーバーの情報を追加
                     embed.addField('Status: :blue_circle:', 'Active', false)
-                    embed.addField('Version', response.version, false)
+                    embed.addField('Version', response.version.name, false)
 
                     // プレイヤーの一覧をEmbedに追加
                     //let playerNameArray = [];
@@ -28,7 +28,7 @@ module.exports = {
                     //}
                     embed.addField(
                         'Players',
-                        response.onlinePlayers.toString() + ' / ' + response.maxPlayers.toString(),
+                        response.players.online.toString() + ' / ' + response.players.max.toString(),
                         // playerNameArray.join(', ')
                         false
                     )
@@ -57,7 +57,6 @@ module.exports = {
                 }).then((embed) => {
                     message.channel.send({embeds: [embed]});
                 })
-
             })
     }
 }
