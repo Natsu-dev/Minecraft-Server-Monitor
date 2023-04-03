@@ -6,7 +6,7 @@ module.exports = {
     name: 'status',
     description: 'show server status',
     async execute(client, command, args, message) {
-        util.status(process.env.IP_ADDRESS) // port is default 25565
+        util.status(process.env.IP_ADDRESS, Number(process.env.PORT) ?? 25565) // port is default 25565
             .then((response) => {
                 console.log(response);
                 return new Promise((resolve) => {
@@ -57,7 +57,6 @@ module.exports = {
                 }).then((embed) => {
                     message.channel.send({embeds: [embed]});
                 })
-
             })
     }
 }
