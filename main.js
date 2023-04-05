@@ -2,6 +2,8 @@ const Discord = require('discord.js');
 const client = new Discord.Client({intents: [Discord.Intents.FLAGS.GUILDS, Discord.Intents.FLAGS.GUILD_MESSAGES]});
 client.commands = new Discord.Collection();
 const prefix = 'mc:';
+
+const axios = require('axios');
 const fs = require('fs');
 const path = require('path');
 const util = require('minecraft-server-util');
@@ -60,6 +62,7 @@ setInterval(() => {
             // }
             console.log(`zeroPlayersCount: ${zeroPlayersCount}`);
         })
+        // TODO Axiosでlocalhost:4040/statusにGETを飛ばしてNgrokのURLを取得する (→そのURLをMyDNS通知用モジュールに渡す)
         .catch((error) => {
             console.error(error);
 
